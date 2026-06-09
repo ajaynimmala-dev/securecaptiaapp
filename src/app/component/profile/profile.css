@@ -1,0 +1,42 @@
+/* Profile avatar */
+.img-circle img {
+  height: 100px;
+  width: 100px;
+  border-radius: 100%;
+  border: 5px solid #fff;
+}
+
+/* Camera icon overlay */
+.right-position {
+  position: absolute;
+  bottom: 30px;
+  left: 70px;
+  top: 35px;
+  color: #0D5EFD;
+  border-radius: 4px;
+  font-size: 23px;
+  cursor: pointer;
+}
+
+/* Disable interactions */
+.unclickable {
+  pointer-events: none;
+  background: #F5F5F5;
+}
+
+/* Table styling */
+.table-hover tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+/* Badge overrides */
+.badge {
+  font-size: 0.85rem;
+  padding: 6px 10px;
+  border-radius: 12px;
+}
+
+/* Card spacing */
+.card {
+  margin-bottom: 20px;
+}

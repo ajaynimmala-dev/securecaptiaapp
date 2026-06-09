@@ -1,0 +1,39 @@
+/* Navbar height */
+.navbar{
+  padding: 4px 12px;
+  min-height: 55px;
+}
+
+/* Brand */
+.navbar-brand{
+  font-size: 18px;
+}
+
+/* Menu text */
+.nav-link{
+  font-size: 14px;
+  padding: 6px 10px !important;
+}
+
+/* Dropdown items */
+.dropdown-item{
+  font-size: 14px;
+  padding: 8px 14px;
+}
+
+/* Profile image */
+.user-avatar-md{
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+}
+
+/* Icons */
+.bi{
+  font-size: 14px;
+}
+
+.user-avatar {
+  height: 32px;
+  width: 32px;
+}

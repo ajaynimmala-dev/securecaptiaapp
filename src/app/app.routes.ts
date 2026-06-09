@@ -3,10 +3,19 @@ import { LoginComponent } from './component/login/login';
 import { RegisterComponent } from './component/register/register';
 import { VerifyComponent } from './component/verify/verify';
 import { ResetPasswordComponent } from './component/resetpassword/resetpassword';
+import { Customers } from './component/customers/customers';
+import {  ProfileComponent } from './component/profile/profile';
+import { Home } from './component/home/home';
 
 export const routes: Routes = [
-  {path :'/login',component: LoginComponent },
-  {path :'/register', component :RegisterComponent },
-  {path : 'verify' ,component :VerifyComponent },
-  {path :'/resetpassword',component:ResetPasswordComponent}
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
+  { path: 'resetpassword', component: ResetPasswordComponent },
+  { path: 'user/verify/password/:key', component: VerifyComponent },
+  { path: 'user/verify/account/:key', component: VerifyComponent },
+  { path: 'customers', component: Customers },
+  { path: 'profile', component: ProfileComponent },
+  { path: '', component: Home },
+  { path: '', redirectTo: '/', pathMatch: 'full' },
+  { path: '**', component: Home },
 ];
