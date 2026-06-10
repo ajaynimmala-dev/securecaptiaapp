@@ -3,6 +3,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { catchError, Observable, pipe, tap, throwError } from 'rxjs';
 import { CustomHttpResponse, Profile } from '../interface/appstate';
 import { Key } from '../enum/key.enum';
+import {User} from '../interface/user';
 
 @Injectable({
   providedIn: 'root',
@@ -34,8 +35,17 @@ export class UserService {
           `Bearer ${localStorage.getItem(Key.TOKEN)}`,
         ),
       })
-      .pipe(tap(console.log),
-        catchError(this.handleError));
+      .pipe(tap(console.log), catchError(this.handleError));
+
+  update$ = (user:User) =>
+    this.http
+      .patch<CustomHttpResponse<Profile>>(`${this.server}/user/update`,user, {
+        headers: new HttpHeaders().set(
+          'Authorization',
+          `Bearer ${localStorage.getItem(Key.TOKEN)}`,
+        ),
+      })
+      .pipe(tap(console.log), catchError(this.handleError));
 
   private handleError(error: HttpErrorResponse): Observable<never> {
     console.log(error);

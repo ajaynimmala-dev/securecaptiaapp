@@ -9,155 +9,159 @@
             <a [routerLink]="['/customers']">Home</a>
           </li>
           <li class="breadcrumb-item active">Users</li>
-          <li class="breadcrumb-item active" aria-current="page">{{user.firstName }}
-            {{ user.firstName }}</li>
+          <li class="breadcrumb-item active" aria-current="page">{{state?.appData?.data?.user?.firstName }}
+            {{ state?.appData?.data?.user?.lastName  }}</li>
         </ol>
       </nav>
 
-      <!-- Profile Card -->
-      <div class="bg-white shadow rounded-lg d-block d-sm-flex" style="border-radius: 8px;">
+      <!-- Profile Card Wrapper (Main Row Container) -->
+      <div class="bg-white shadow rounded-lg d-block d-md-flex" style="border-radius: 8px;">
+
+        <!-- Left Column Sidebar (Menu) Container -->
         <div class="profile-tab-nav border-right">
           <div class="p-4">
             <div class="img-circle text-center mb-3">
               <span style="position: relative;">
-                <img [src]="user.imageUrl" alt="John" class="shadow" />
+                <img [src]="state?.appData?.data?.user?.imageUrl" alt="John" class="shadow" />
                 <i class="bi bi-camera-fill right-position"></i>
               </span>
             </div>
-            <h4 class="text-center">{{ user.firstName }}</h4>
-            <span class="text-muted">Since {{ user?.createdAt | date:'MMMM d, y' }} </span>
+            <h4 class="text-center">{{ state?.appData?.data?.user?.firstName  }}</h4>
+            <span class="text-muted">Since {{ state?.appData?.data?.user?.createdAt  | date:'MMMM d, y' }} </span>
           </div>
-        </div>
 
-        <!-- Vertical Nav Pills -->
-        <div class="nav flex-column nav-pills p-4" id="v-pills-tab" role="tablist">
-          <a class="nav-link active" id="profile" data-bs-toggle="pill" href="#profile-tab">
-            <i class="bi bi-person-circle"></i> Profile
-          </a>
-          <a class="nav-link" id="password" data-bs-toggle="pill" href="#password-tab">
-            <i class="bi bi-key-fill"></i> Password
-          </a>
-          <a class="nav-link" id="authorization" data-bs-toggle="pill" href="#authorization-tab">
-            <i class="bi bi-shield-shaded"></i> Authorization
-          </a>
-          <a class="nav-link" id="account" data-bs-toggle="pill" href="#account-tab">
-            <i class="bi bi-gear"></i> Account
-          </a>
-          <a class="nav-link" id="authentication" data-bs-toggle="pill" href="#authentication-tab">
-            <i class="bi bi-lock-fill"></i> Authentication
-          </a>
-        </div>
-      </div>
+          <!-- Vertical Nav Pills Menu Container -->
+          <div class="nav flex-column nav-pills p-4" id="v-pills-tab" role="tablist">
+            <a class="nav-link active" id="profile" data-bs-toggle="pill" href="#profile-tab">
+              <i class="bi bi-person-circle"></i> Profile
+            </a>
+            <a class="nav-link" id="password" data-bs-toggle="pill" href="#password-tab">
+              <i class="bi bi-key-fill"></i> Password
+            </a>
+            <a class="nav-link" id="authorization" data-bs-toggle="pill" href="#authorization-tab">
+              <i class="bi bi-shield-shaded"></i> Authorization
+            </a>
+            <a class="nav-link" id="account" data-bs-toggle="pill" href="#account-tab">
+              <i class="bi bi-gear"></i> Account
+            </a>
+            <a class="nav-link" id="authentication" data-bs-toggle="pill" href="#authentication-tab">
+              <i class="bi bi-lock-fill"></i> Authentication
+            </a>
+          </div> <!-- Closed Nav Pills -->
+        </div> <!-- Closed Left Column Sidebar -->
 
-      <!-- Tab Content -->
-      <div class="tab-content p-4 p-md-5" id="v-pills-tabContent" style="border-left: 1px solid #d4d0d0;">
+        <!-- Right Column Content Container (Now directly parallel to the Sidebar) -->
+        <div class="tab-content p-4 p-md-5" id="v-pills-tabContent" style="border-left: 1px solid #d4d0d0; flex-grow: 1;">
 
-        <!-- Profile Settings -->
-        <div class="tab-pane fade show active" id="profile-tab" role="tabpanel">
-          <h3 class="mb-4">Profile Settings</h3>
-          <form #profileForm="ngForm">
-            <input type="hidden" name="id">
-            <div class="row">
-              <div class="col-md-6 form-group">
-                <label>First Name</label>
-                <input type="text" name="firstName" class="form-control" [(ngModel)]="user.firstName" [disabled]="user.roleName === 'ROLE_USER'">
+          <!-- Profile Settings -->
+          <div class="tab-pane fade show active" id="profile-tab" role="tabpanel">
+            <h3 class="mb-4">Profile Settings</h3>
+            <form #profileForm="ngForm" (ngSubmit)="updateProfile(profileForm)">
+              <input type="hidden" name="id" [ngModel]="state?.appData?.data?.user?.id">
+              <div class="row">
+                <div class="col-md-6 form-group">
+                  <label>First Name</label>
+                  <input type="text" name="firstName" class="form-control" [ngModel]="state?.appData?.data?.user?.firstName " [disabled]="state?.appData?.data?.user?.roleName === 'ROLE_USER' || (isLoading$ | async)">
+                </div>
+                <div class="col-md-6 form-group">
+                  <label>Last Name</label>
+                  <input type="text" name="lastName" class="form-control" [ngModel]="state?.appData?.data?.user?.lastName" [disabled]="state?.appData?.data?.user?.roleName === 'ROLE_USER' || (isLoading$ | async)">
+                </div>
+                <div class="col-md-6 form-group">
+                  <label>Email</label>
+                  <input type="text" name="email" class="form-control" [ngModel]="state?.appData?.data?.user?.email" [disabled]="state?.appData?.data?.user?.roleName === 'ROLE_USER' || (isLoading$ | async)">
+                </div>
+                <div class="col-md-6 form-group">
+                  <label>Phone</label>
+                  <input type="text" name="phone" class="form-control" [ngModel]="state?.appData?.data?.user?.phone" [disabled]="state?.appData?.data?.user?.roleName === 'ROLE_USER' || (isLoading$ | async)">
+                </div>
+                <div class="col-md-6 form-group">
+                  <label>Address</label>
+                  <input type="text" name="address" class="form-control" [ngModel]="state?.appData?.data?.user?.address" [disabled]="state?.appData?.data?.user?.roleName === 'ROLE_USER' || (isLoading$ | async)">
+                </div>
+                <div class="col-md-6 form-group">
+                  <label>Job Title</label>
+                  <input type="text" name="title" class="form-control" [ngModel]="state?.appData?.data?.user?.title" [disabled]="state?.appData?.data?.user?.roleName === 'ROLE_USER' || (isLoading$ | async)">
+                </div>
+                <div class="col-md-12 form-group">
+                  <label>Bio</label>
+                  <textarea name="bio" class="form-control" rows="4" [ngModel]="state?.appData?.data?.user?.bio" [disabled]="state?.appData?.data?.user?.roleName === 'ROLE_USER' || (isLoading$ | async)"></textarea>
+                </div>
               </div>
-              <div class="col-md-6 form-group">
-                <label>Last Name</label>
-                <input type="text" name="lastName" class="form-control" [(ngModel)]="user.lastName" [disabled]="user.roleName === 'ROLE_USER'">
-              </div>
-              <div class="col-md-6 form-group">
-                <label>Email</label>
-                <input type="text" name="email" class="form-control" [(ngModel)]="user.email" [disabled]="user.roleName === 'ROLE_USER'">
-              </div>
-              <div class="col-md-6 form-group">
-                <label>Phone</label>
-                <input type="text" name="phone" class="form-control" [(ngModel)]="user.phone" [disabled]="user.roleName === 'ROLE_USER'">
-              </div>
-              <div class="col-md-6 form-group">
-                <label>Address</label>
-                <input type="text" name="address" class="form-control" [(ngModel)]="user.address" [disabled]="user.roleName === 'ROLE_USER'">
-              </div>
-              <div class="col-md-6 form-group">
-                <label>Job Title</label>
-                <input type="text" name="title" class="form-control" [(ngModel)]="user.title" [disabled]="user.roleName === 'ROLE_USER'">
-              </div>
-              <div class="col-md-12 form-group">
-                <label>Bio</label>
-                <textarea name="bio" class="form-control" rows="4" [(ngModel)]="user.bio" [disabled]="user.roleName === 'ROLE_USER'"></textarea>
-              </div>
-            </div>
-            <button type="submit" class="btn btn-primary">
-              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 5px;"></span>
-              <span>Update</span>
-            </button>
-          </form>
-        </div>
+              <button type="submit" class="btn btn-primary" [disabled]="state?.appData?.data?.user?.roleName === 'ROLE_USER' || (isLoading$ | async)">
+                <span *ngIf="isLoading$ |async " class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 5px;"></span>
+                <span *ngIf="isLoading$ | async">Loading</span>
+                <span *ngIf="!(isLoading$ | async)">Update</span>
+              </button>
+            </form>
+          </div>
 
-        <!-- Password Update -->
-        <div class="tab-pane fade" id="password-tab" role="tabpanel">
-          <h3 class="mb-4">Change Password</h3>
-          <form>
-            <div class="row">
-              <div class="col-md-6 form-group">
-                <label>Current Password</label>
-                <input type="password" name="currentPassword" class="form-control" required>
+          <!-- Password Update -->
+          <div class="tab-pane fade" id="password-tab" role="tabpanel">
+            <h3 class="mb-4">Change Password</h3>
+            <form>
+              <div class="row">
+                <div class="col-md-6 form-group">
+                  <label>Current Password</label>
+                  <input type="password" name="currentPassword" class="form-control" required>
+                </div>
+                <div class="col-md-6 form-group">
+                  <label>New Password</label>
+                  <input type="password" name="newPassword" class="form-control" minlength="5" required>
+                </div>
+                <div class="col-md-6 form-group">
+                  <label>Confirm New Password</label>
+                  <input type="password" name="confirmPassword" class="form-control" minlength="5" required>
+                </div>
               </div>
-              <div class="col-md-6 form-group">
-                <label>New Password</label>
-                <input type="password" name="newPassword" class="form-control" minlength="5" required>
-              </div>
-              <div class="col-md-6 form-group">
-                <label>Confirm New Password</label>
-                <input type="password" name="confirmPassword" class="form-control" minlength="5" required>
-              </div>
-            </div>
-            <button [disabled]="user.roleName === 'ROLE_USER'" type="submit" class="btn btn-primary">
-              <span *ngIf="isLoading$| async" class="spinner-border spinner-border-sm" role="status" aria-hidden="true">
-              </span>
-              <span *ngIf="isLoading$ | async">Loading</span>
-              <span *ngIf="!(isLoading$ | async)">Update</span>
-            </button>
-          </form>
-        </div>
+              <button [disabled]="state?.appData?.data?.user?.roleName === 'ROLE_USER'" type="submit" class="btn btn-primary">
+                <span *ngIf="isLoading$| async" class="spinner-border spinner-border-sm" role="status" aria-hidden="true">
+                </span>
+                <span *ngIf="isLoading$ | async">Loading</span>
+                <span *ngIf="!(isLoading$ | async)">Update</span>
+              </button>
+            </form>
+          </div>
 
-        <!-- Account Activities -->
-        <div class="tab-pane fade" id="account-tab" role="tabpanel">
-          <h3 class="mb-4">Account Activities</h3>
-          <table class="table table-hover">
-            <thead>
-            <tr>
-              <th>Device</th>
-              <th>IP Address</th>
-              <th>Date</th>
-              <th>Type</th>
-              <th>Description</th>
-              <th>Action</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr *ngFor="let activity of activities">
-              <td>{{ activity.device }}</td>
-              <td>{{ activity.ip }}</td>
-              <td>{{ activity.date }}</td>
-              <td>
-                  <span class="badge pill" [ngClass]="activity.typeClass">
-                    {{ activity.type }}
-                  </span>
-              </td>
-              <td>{{ activity.description }}</td>
-              <td>
-                <button type="button" class="btn btn-sm btn-danger">Report</button>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+          <!-- Account Activities -->
+          <div class="tab-pane fade" id="account-tab" role="tabpanel">
+            <h3 class="mb-4">Account Activities</h3>
+            <table class="table table-hover">
+              <thead>
+              <tr>
+                <th>Device</th>
+                <th>IP Address</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Action</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let activity of activities">
+                <td>{{ activity.device }}</td>
+                <td>{{ activity.ip }}</td>
+                <td>{{ activity.date }}</td>
+                <td>
+                    <span class="badge pill" [ngClass]="activity.typeClass">
+                      {{ activity.type }}
+                    </span>
+                </td>
+                <td>{{ activity.description }}</td>
+                <td>
+                  <button type="button" class="btn btn-sm btn-danger">Report</button>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div> <!-- Closed Tab Content -->
+      </div> <!-- Closed Profile Card Wrapper -->
+    </div> <!-- Closed Container -->
   </section>
 </ng-container>
+
 <form enctype="multipart/form-data" style="display: none;">
-  <input type="file" name="image" id="image"
-  placeholder="file" ngModel accept="image/*">
+  <input type="file" name="image" id="image" placeholder="file" ngModel accept="image/*">
 </form>
