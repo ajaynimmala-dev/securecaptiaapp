@@ -27,28 +27,30 @@ export class UserService {
         .get<CustomHttpResponse<Profile>>(`${this.server}/user/verify/code/${email}/${code}`)
         .pipe(tap(console.log), catchError(this.handleError))
     );
+
   profile$ = () =>
     this.http
-      .get<CustomHttpResponse<Profile>>(`${this.server}/user/profile`, {
-        headers: new HttpHeaders().set(
-          'Authorization',
-          `Bearer ${localStorage.getItem(Key.TOKEN)}`,
-        ),
-      })
+      .get<CustomHttpResponse<Profile>>(`${this.server}/user/profile`)
       .pipe(tap(console.log), catchError(this.handleError));
 
-  update$ = (user:User) =>
+  update$ = (user: User) =>
     this.http
-      .patch<CustomHttpResponse<Profile>>(`${this.server}/user/update`,user, {
-        headers: new HttpHeaders().set(
-          'Authorization',
-          `Bearer ${localStorage.getItem(Key.TOKEN)}`,
-        ),
-      })
+      .patch<CustomHttpResponse<Profile>>(`${this.server}/user/update`, user)
       .pipe(tap(console.log), catchError(this.handleError));
+
+  refreshToken$ = () =>
+    this.http
+      .get<
+        CustomHttpResponse<Profile>
+      >(`${this.server}/user/refresh/token`, { headers: { Authorization: `Bearer ${localStorage.getItem(Key.REFRESH_TOKEN)}` } })
+      .pipe(tap(response=>{
+        localStorage.removeItem(Key.TOKEN);
+        localStorage.removeItem(Key.REFRESH_TOKEN);
+        localStorage.setItem(Key.TOKEN,response.data.access_token);
+        localStorage.setItem(Key.REFRESH_TOKEN,response.data.refresh_token);
+      }), catchError(this.handleError));
 
   private handleError(error: HttpErrorResponse): Observable<never> {
-    console.log(error);
     let errorMessage: string;
     if (error.error instanceof ErrorEvent) {
       errorMessage = `A client error occurred-${error.error.message}`;

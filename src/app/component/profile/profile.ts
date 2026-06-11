@@ -26,9 +26,9 @@ export class ProfileComponent implements OnInit {
   constructor(private userService: UserService) {}
 
   ngOnInit(): void {
+    this.userService.profile$().subscribe();
     this.profileState = this.userService.profile$().pipe(
       map((response) => {
-        console.log(response);
         this.dataSubject.next(response);
         return { dataState: DataState.LOADED, appData: response };
       }),
