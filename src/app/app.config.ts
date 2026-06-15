@@ -16,11 +16,11 @@ export const appConfig: ApplicationConfig = {
 
     provideHttpClient(withInterceptorsFromDi()),
 
-    TokenInterceptor, // ← add this
+    TokenInterceptor,
 
     {
       provide: HTTP_INTERCEPTORS,
-      useExisting: TokenInterceptor, // ← change this
+      useExisting: TokenInterceptor,
       multi: true,
     },
   ],

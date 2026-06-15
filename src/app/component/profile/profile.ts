@@ -75,4 +75,67 @@ export class ProfileComponent implements OnInit {
       }),
     );
   }
+
+  updatePassword(passwordForm: NgForm): void {
+    this.isLoadingSubject.next(true);
+    if (passwordForm.value.newPassword === passwordForm.value.confirmNewPassword) {
+      this.profileState = this.userService.updatePassword$(passwordForm.value).pipe(
+        map((response) => {
+          console.log(response.data);
+          this.dataSubject.next({
+            ...response,
+            data: response.data,
+          });
+          this.isLoadingSubject.next(false);
+          return { dataState: DataState.LOADED, appData: response };
+        }),
+
+        startWith({
+          dataState: DataState.LOADED,
+          appData: this.dataSubject.value,
+        }),
+
+        catchError((error: string) => {
+          this.isLoadingSubject.next(false);
+          return of({
+            dataState: DataState.ERROR,
+            appData: this.dataSubject.value,
+            error: error,
+          });
+        }),
+      );
+    } else {
+      passwordForm.reset();
+      this.isLoadingSubject.next(false);
+    }
+  }
+
+  updateRole(roleForm: NgForm): void {
+    this.isLoadingSubject.next(true);
+    this.profileState = this.userService.updateRole$(roleForm.value.roleName).pipe(
+      map((response) => {
+        console.log(response.data);
+        this.dataSubject.next({
+          ...response,
+          data: response.data,
+        });
+        this.isLoadingSubject.next(false);
+        return { dataState: DataState.LOADED, appData: response };
+      }),
+
+      startWith({
+        dataState: DataState.LOADED,
+        appData: this.dataSubject.value,
+      }),
+
+      catchError((error: string) => {
+        this.isLoadingSubject.next(false);
+        return of({
+          dataState: DataState.ERROR,
+          appData: this.dataSubject.value,
+          error: error,
+        });
+      }),
+    );
+  }
 }

@@ -43,12 +43,31 @@ export class UserService {
       .get<
         CustomHttpResponse<Profile>
       >(`${this.server}/user/refresh/token`, { headers: { Authorization: `Bearer ${localStorage.getItem(Key.REFRESH_TOKEN)}` } })
-      .pipe(tap(response=>{
-        localStorage.removeItem(Key.TOKEN);
-        localStorage.removeItem(Key.REFRESH_TOKEN);
-        localStorage.setItem(Key.TOKEN,response.data.access_token);
-        localStorage.setItem(Key.REFRESH_TOKEN,response.data.refresh_token);
-      }), catchError(this.handleError));
+      .pipe(
+        tap((response) => {
+          localStorage.removeItem(Key.TOKEN);
+          localStorage.removeItem(Key.REFRESH_TOKEN);
+          localStorage.setItem(Key.TOKEN, response.data.access_token);
+          localStorage.setItem(Key.REFRESH_TOKEN, response.data.refresh_token);
+        }),
+        catchError(this.handleError),
+      );
+
+  updatePassword$ = (form: {
+    currentPassword: string;
+    newPassword: string;
+    confirmNewPassword: string;
+  }) =>
+    this.http
+      .patch<CustomHttpResponse<Profile>>(`${this.server}/user/update/password`, form)
+      .pipe(tap(console.log), catchError(this.handleError));
+
+  updateRole$ = (
+    roleName :string) =>
+    this.http
+      .patch<CustomHttpResponse<Profile>>(`${this.server}/user/update/role/${roleName}`,{})
+      .pipe(tap(console.log),
+        catchError(this.handleError));
 
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage: string;
