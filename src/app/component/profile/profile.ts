@@ -8,10 +8,11 @@ import { CustomHttpResponse, Profile } from '../../interface/appstate';
 import { UserService } from '../../service/userservice';
 import { State } from '../../interface/state';
 import { DataState } from '../../enum/datastate.enum';
+import { EventType} from '../../enum/event.type.enum';
 
 @Component({
   selector: 'app-profile',
-  imports: [Navbar, RouterLink, FormsModule, NgClass, DatePipe, NgIf, AsyncPipe, NgForOf],
+  imports: [Navbar, RouterLink, FormsModule, DatePipe, NgIf, AsyncPipe, NgForOf, NgClass],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })
@@ -20,7 +21,10 @@ export class ProfileComponent implements OnInit {
   private dataSubject = new BehaviorSubject<CustomHttpResponse<Profile>>(null);
   protected isLoadingSubject = new BehaviorSubject<boolean>(false);
   isLoading$ = this.isLoadingSubject.asObservable();
+  protected showLogsSubject = new BehaviorSubject<boolean>(false);
+  showLogs$ = this.showLogsSubject.asObservable();
   readonly DataState = DataState;
+  readonly EventType = EventType;
   activities: null;
 
   constructor(private userService: UserService) {}
@@ -137,5 +141,110 @@ export class ProfileComponent implements OnInit {
         });
       }),
     );
+  }
+
+  updateAccountSettings(settings: NgForm): void {
+    this.isLoadingSubject.next(true);
+    this.profileState = this.userService.updateAccountSettings$(settings.value).pipe(
+      map((response) => {
+        console.log(response.data);
+        this.dataSubject.next({
+          ...response,
+          data: response.data,
+        });
+        this.isLoadingSubject.next(false);
+        return { dataState: DataState.LOADED, appData: response };
+      }),
+
+      startWith({
+        dataState: DataState.LOADED,
+        appData: this.dataSubject.value,
+      }),
+
+      catchError((error: string) => {
+        this.isLoadingSubject.next(false);
+        return of({
+          dataState: DataState.ERROR,
+          appData: this.dataSubject.value,
+          error: error,
+        });
+      }),
+    );
+  }
+
+  toggleMfa(): void {
+    this.isLoadingSubject.next(true);
+    this.profileState = this.userService.toggleMfa$().pipe(
+      map((response) => {
+        console.log(response.data);
+        this.dataSubject.next({
+          ...response,
+          data: response.data,
+        });
+        this.isLoadingSubject.next(false);
+        return { dataState: DataState.LOADED, appData: response };
+      }),
+
+      startWith({
+        dataState: DataState.LOADED,
+        appData: this.dataSubject.value,
+      }),
+
+      catchError((error: string) => {
+        this.isLoadingSubject.next(false);
+        return of({
+          dataState: DataState.ERROR,
+          appData: this.dataSubject.value,
+          error: error,
+        });
+      }),
+    );
+  }
+
+  updatePicture(image: File): void {
+    if (image) {
+      this.isLoadingSubject.next(true);
+      this.profileState = this.userService.updateImage$(this.getFormDate(image)).pipe(
+        map((response) => {
+          console.log(response.data);
+          this.dataSubject.next({
+            ...response,
+            data: {
+              ...response.data,
+              user: {
+                ...response.data.user,
+                imageUrl: `${response.data.user.imageUrl}?time=${new Date().getTime()}`,
+              },
+            },
+          });
+          this.isLoadingSubject.next(false);
+          return { dataState: DataState.LOADED, appData: response };
+        }),
+
+        startWith({
+          dataState: DataState.LOADED,
+          appData: this.dataSubject.value,
+        }),
+
+        catchError((error: string) => {
+          this.isLoadingSubject.next(false);
+          return of({
+            dataState: DataState.ERROR,
+            appData: this.dataSubject.value,
+            error: error,
+          });
+        }),
+      );
+    }
+  }
+
+  toggleLogs():void{
+    this.showLogsSubject.next(!this.showLogsSubject.value);
+  }
+
+  private getFormDate(image: File) {
+    const formData = new FormData();
+    formData.append('image', image);
+    return formData;
   }
 }

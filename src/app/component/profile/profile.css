@@ -24,6 +24,9 @@
   background: #F5F5F5;
 }
 
+.nav-link {
+  white-space: nowrap;
+}
 /* Table styling */
 .table-hover tbody tr:hover {
   background-color: #f9f9f9;

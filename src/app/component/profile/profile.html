@@ -1,5 +1,5 @@
 <ng-container *ngIf="(profileState | async) as state">
-  <app-navbar></app-navbar>
+  <app-navbar [user]="state?.appData?.data?.user"></app-navbar>
   <section>
     <div class="container">
       <!-- Breadcrumb -->
@@ -23,7 +23,7 @@
             <div class="img-circle text-center mb-3">
               <span style="position: relative;">
                 <img [src]="state?.appData?.data?.user?.imageUrl" alt="John" class="shadow" />
-                <i class="bi bi-camera-fill right-position"></i>
+                <i (click)="fileInput.click()" class="bi bi-camera-fill right-position"></i>
               </span>
             </div>
             <h4 class="text-center">{{ state?.appData?.data?.user?.firstName  }}</h4>
@@ -161,45 +161,140 @@
             </form>
           </div>
 
-          <!-- Account Activities -->
+          <!-- Account settings -->
           <div class="tab-pane fade" id="account-tab" role="tabpanel" aria-labelledby="application">
-            <h3 class="mb-4">Account Activities</h3>
-            <table class="table table-hover">
-              <thead>
-              <tr>
-                <th>Device</th>
-                <th>IP Address</th>
-                <th>Date</th>
-                <th>Type</th>
-                <th>Description</th>
-                <th>Action</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr *ngFor="let activity of activities">
-                <td>{{ activity.device }}</td>
-                <td>{{ activity.ip }}</td>
-                <td>{{ activity.date }}</td>
-                <td>
-                    <span class="badge pill" [ngClass]="activity.typeClass">
-                      {{ activity.type }}
-                    </span>
-                </td>
-                <td>{{ activity.description }}</td>
-                <td>
-                  <button type="button" class="btn btn-sm btn-danger">Report</button>
-                </td>
-              </tr>
-              </tbody>
-            </table>
+            <h3 class="mb-4">Account Setting</h3>
+            <form #settingForm="ngForm" (ngSubmit)="updateAccountSettings(settingForm)">
+              <input type="hidden" name="userid">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <input [disabled]="!(state?.appData?.data?.user?.roleName ===
+                'ROLE_SYSADMIN'|| state?.appData?.data?.user?.roleName === 'ROLE_ADMIN') || (isLoading$ | async) || (isLoading$ | async)"
+                           [checked]="state?.appData?.data?.user?.enabled"
+                           [ngModel]="state?.appData?.data?.user?.enabled"
+                      type="checkbox" name="enabled" class="form-check-input">
+                    <label class="form-check-label" for="enabled">
+                      Account Active
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input [disabled]="!(state?.appData?.data?.user?.roleName ===
+                'ROLE_SYSADMIN'|| state?.appData?.data?.user?.roleName === 'ROLE_ADMIN') || (isLoading$ | async) || (isLoading$ | async)"
+                           [checked]="state?.appData?.data?.user?.notLocked"
+                           [ngModel]="state?.appData?.data?.user?.notLocked"
+                      type="checkbox" name="notLocked" class="form-check-input">
+                    <label class="form-check-label" for="notLocked">
+                      Account Unlocked
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <button [disabled]="!(state?.appData?.data?.user?.roleName ===
+              'ROLE_SYSADMIN'|| state?.appData?.data?.user?.roleName === 'ROLE_ADMIN') || (isLoading$ | async) || (isLoading$ | async)"
+              type="submit" class="btn btn-primary">
+                <span *ngIf="isLoading$| async" class="spinner-border spinner-border-sm" role="status" aria-hidden="true">
+                </span>
+                <span *ngIf="isLoading$ | async">Loading</span>
+                <span *ngIf="!(isLoading$ | async)">Update</span>
+              </button>
+            </form>
           </div>
-
+<!--          Authentication settings-->
+          <div class="tab-pane fade" id="authentication-tab" role="tabpanel" aria-labelledby="application">
+            <h3 class="mb-4">Authentication Setting</h3>
+            <p>These Settings help keep your account more secure</p>
+            <div class="list-group mb-5 shadow">
+                <div class="list-group-item">
+                  <div class="row align-items center">
+                    <div class="col">
+                      <strong class="mb-2">Multi-Factor Authentication</strong>
+                      <span *ngIf="state?.appData?.data?.user?.usingMfa" class="badge bg-success mx-3">Enabled</span>
+                      <span *ngIf="!state?.appData?.data?.user?.usingMfa" class="badge bg-success mx-3">Disabled</span>
+                      <p class="text muted mb -0">Set up Multi-Factor Authentication (MFA) help keep your account secure</p>
+                    </div>
+                    <div class="col-auto">
+                      <button [disabled]="state?.appData?.data?.user?.roleName === 'ROLE_USER' || (isLoading$ | async)"
+                              (click)="toggleMfa()" class="btn btn-primary btn-sn"> {{ state?.appData?.data?.user?.roleName ===
+                      'ROLE_USER'?'Disable':'Enable' }}
+                        <span *ngIf="(isLoading$ | async)" class="spinner-border spinnrer-border-sm"
+                              role="status" aria-hidden="true" style="margin-right:5px"></span>
+                      </button>
+                    </div>
+                  </div>
+                  </div>
+                  <div class="list-group-item">
+                    <div class="row align-items-center">
+                      <div class="col">
+                        <strong class="mb-2">Activity Logs</strong>
+                        <p class="text-muted mb-0">show the latest activities on your account</p>
+                      </div>
+                      <div class="col-auto">
+                        <div class="custom-control custom-switch">
+                          <input type="checkbox" [disabled]="(isLoading$ | async)" (change)="toggleLogs()" class="custom-control-input"
+                                 [checked]="(showLogs$ | async)" id="activityLog">
+                          <span class="custom-control-label"></span>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+              </div>
+          </div>
         </div> <!-- Closed Tab Content -->
       </div> <!-- Closed Profile Card Wrapper -->
+<!--      Account Activites-->
+      <div *ngIf="(showLogs$ |async)" class="row">
+        <div class="col-xl-12 mt-4">
+          <div class="card" style="border-radius: 8px ">
+            <div class="card-body">
+              <h5 class="card-ttile">Account Activities</h5>
+              <h6 class="card-subtitle mb-2 text-muted">Latest activities on your account</h6>
+              <table class="table table-hover">
+                <thead>
+                <tr>
+                  <th scope="col">Device</th>
+                  <th scope="col">IP Address</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Time</th>
+                  <th scope="col">Description</th>
+                  <th scope="col">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let event of state?.appData?.data?.events">
+                  <td>{{ event.device }}</td>
+                  <td>{{ event.ipAddress }}</td>
+                  <td>{{ event.createdAt| date:'MMMM d, y, h:mm a' }}</td>
+                  <td>
+                    <span class="badge pill"
+                          [ngClass]="[
+                          event.type === EventType.LOGIN_ATTEMPT ? 'bg-warning' :
+                          event.type === EventType.LOGIN_ATTEMPT_FAILURE ? 'bg-danger' :
+                          event.type === EventType.LOGIN_ATTEMPT_SUCCESS ? 'bg-success' :
+                          event.type === EventType.PROFILE_UPDATE ? 'bg-primary' :
+                          event.type === EventType.PROFILE_PICTURE_UPDATE ? 'bg-primary' :
+                          event.type === EventType.ROLE_UPDATE ? 'bg-secondary' :
+                          event.type === EventType.ACCOUNT_SETTINGS_UPDATE ? 'bg-dark' :
+                          event.type === EventType.PASSWORD_UPDATE ? 'bg-light text-dark' :
+                          event.type === EventType.MFA_UPDATE ? 'bg-secondary' :
+                    '']">{{ event.type }}</span>
+                  </td>
+                  <td>{{ event.description }}</td>
+                  <td>
+                    <button type="button" class="btn btn-sm" style="background-color: #fd5d0d;font-weight: 450">Report</button>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
     </div> <!-- Closed Container -->
   </section>
 </ng-container>
 
 <form enctype="multipart/form-data" style="display: none;">
-  <input type="file" name="image" id="image" placeholder="file" ngModel accept="image/*">
+  <input type="file" #fileInput (change)="updatePicture($event.target?.files?.[0])" name="image" id="image"
+         placeholder="file" ngModel accept="image/*">
 </form>

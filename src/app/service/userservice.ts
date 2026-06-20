@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { JwtHelperService} from '@auth0/angular-jwt';
 import { catchError, Observable, pipe, tap, throwError } from 'rxjs';
 import { CustomHttpResponse, Profile } from '../interface/appstate';
 import { Key } from '../enum/key.enum';
@@ -10,6 +11,7 @@ import {User} from '../interface/user';
 })
 export class UserService {
   private readonly server: string = 'http://localhost:8080';
+  private jwtHelper = new JwtHelperService();
   constructor(private http: HttpClient) {}
 
   login$ = (email: string, password: string) =>
@@ -62,12 +64,37 @@ export class UserService {
       .patch<CustomHttpResponse<Profile>>(`${this.server}/user/update/password`, form)
       .pipe(tap(console.log), catchError(this.handleError));
 
-  updateRole$ = (
-    roleName :string) =>
+  updateRole$ = (roleName: string) =>
     this.http
-      .patch<CustomHttpResponse<Profile>>(`${this.server}/user/update/role/${roleName}`,{})
-      .pipe(tap(console.log),
-        catchError(this.handleError));
+      .patch<CustomHttpResponse<Profile>>(`${this.server}/user/update/role/${roleName}`, {})
+      .pipe(tap(console.log), catchError(this.handleError));
+
+  updateAccountSettings$ = (settings: { enabled: boolean; notLocked: boolean }) =>
+    this.http
+      .patch<CustomHttpResponse<Profile>>(`${this.server}/user/update/settings`, settings)
+      .pipe(tap(console.log), catchError(this.handleError));
+
+  toggleMfa$ = () =>
+    this.http
+      .patch<CustomHttpResponse<Profile>>(`${this.server}/user/togglemfa`, {})
+      .pipe(tap(console.log), catchError(this.handleError));
+
+  updateImage$ = (formData: FormData) =>
+    this.http
+      .patch<CustomHttpResponse<Profile>>(`${this.server}/user/update/image`, formData)
+      .pipe(tap(console.log), catchError(this.handleError));
+
+  logOut() {
+    localStorage.removeItem(Key.TOKEN);
+    localStorage.removeItem(Key.REFRESH_TOKEN);
+  }
+
+  isAuthenticated = (): boolean => {
+    return (
+      this.jwtHelper.decodeToken<string>(localStorage.getItem(Key.TOKEN)) &&
+      !this.jwtHelper.isTokenExpired(localStorage.getItem(Key.TOKEN))
+    );
+  };
 
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage: string;

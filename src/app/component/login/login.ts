@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { UserService } from '../../service/userservice';
 import { FormsModule, NgForm } from '@angular/forms';
@@ -14,7 +14,7 @@ import { AsyncPipe, NgIf, NgStyle, NgSwitch } from '@angular/common';
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   loginState$: Observable<LoginState> = of({
     dataState: DataState.LOADED,
   });
@@ -27,6 +27,10 @@ export class LoginComponent {
     private router: Router,
     private userService: UserService,
   ) {}
+
+  ngOnInit(): void {
+    this.userService.isAuthenticated()?this.router.navigate(['/']):this.router.navigate(['/login'])
+  }
 
   login(loginForm: NgForm): void {
     console.log(loginForm);
@@ -78,14 +82,14 @@ export class LoginComponent {
       .verifyCode$(this.emailSubject.value, verifyCodeForm.value.code)
       .pipe(
         map((response) => {
-            localStorage.setItem(Key.TOKEN, response.data.access_token);
-            localStorage.setItem(Key.REFRESH_TOKEN, response.data.refresh_token);
-            this.router.navigate(['/']);
+          localStorage.setItem(Key.TOKEN, response.data.access_token);
+          localStorage.setItem(Key.REFRESH_TOKEN, response.data.refresh_token);
+          this.router.navigate(['/']);
 
-            return {
-              dataState: DataState.LOADED,
-              loginSuccess: true,
-            };
+          return {
+            dataState: DataState.LOADED,
+            loginSuccess: true,
+          };
         }),
         startWith({
           dataState: DataState.LOADING,
@@ -105,9 +109,10 @@ export class LoginComponent {
         }),
       );
   }
+
   loginPage(): void {
     this.loginState$ = of({
-      dataState: DataState.LOADED
+      dataState: DataState.LOADED,
     });
   }
 }
