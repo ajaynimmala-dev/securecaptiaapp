@@ -30,7 +30,7 @@ export class UserService {
         .pipe(tap(console.log), catchError(this.handleError))
     );
 
-  profile$ = () =>
+  customerService$ = () =>
     this.http
       .get<CustomHttpResponse<Profile>>(`${this.server}/user/profile`)
       .pipe(tap(console.log), catchError(this.handleError));

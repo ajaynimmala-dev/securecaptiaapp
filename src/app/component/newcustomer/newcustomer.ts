@@ -1,45 +1,40 @@
 import { Component, OnInit } from '@angular/core';
 import { Navbar } from '../navbar/navbar';
-import { StatsComponent } from '../stats/stats';
+import { RouterLink } from '@angular/router';
 import { BehaviorSubject, catchError, map, Observable, of, startWith } from 'rxjs';
 import { State } from '../../interface/state';
 import { CustomHttpResponse, Page } from '../../interface/appstate';
-import { UserService } from '../../service/user.service';
-import { DataState} from '../../enum/datastate.enum';
-import { EventType } from '../../enum/event.type.enum';
-import { CustomerService } from '../../service/customer.service';
-import { AsyncPipe, NgClass, NgForOf, NgIf } from '@angular/common';
 import { User } from '../../interface/user';
-import { Customer } from '../../interface/customer';
-import { Router, RouterLink } from '@angular/router';
+import { UserService } from '../../service/user.service';
+import { CustomerService } from '../../service/customer.service';
+import { DataState } from '../../enum/datastate.enum';
+import { EventType } from '../../enum/event.type.enum';
+import { AsyncPipe, NgIf, NgSwitch, NgSwitchCase } from '@angular/common';
+import { FormsModule, NgForm } from '@angular/forms';
 
 @Component({
-  selector: 'app-home',
-  imports: [Navbar, StatsComponent, AsyncPipe, NgIf, NgForOf, NgClass, RouterLink],
-  templateUrl: './home.html',
-  styleUrl: './home.css',
+  selector: 'app-newcustomer',
+  imports: [Navbar, RouterLink, AsyncPipe, NgSwitchCase, NgSwitch, NgIf, FormsModule],
+  templateUrl: './newcustomer.html',
+  styleUrl: './newcustomer.css',
 })
-export class Home implements OnInit {
-  homeState$: Observable<State<CustomHttpResponse<Page & User>>>;
+export class Newcustomer implements OnInit {
+  newCustomerState$: Observable<State<CustomHttpResponse<Page & User>>>;
   private dataSubject = new BehaviorSubject<CustomHttpResponse<Page & User>>(null);
   protected isLoadingSubject = new BehaviorSubject<boolean>(false);
   isLoading$ = this.isLoadingSubject.asObservable();
-  private currentPageSubject = new BehaviorSubject<number>(0);
-  currentPage$ = this.currentPageSubject.asObservable();
-  protected showLogsSubject = new BehaviorSubject<boolean>(false);
-  showLogs$ = this.showLogsSubject.asObservable();
   readonly DataState = DataState;
   readonly EventType = EventType;
+  activities: null;
 
   constructor(
-    private router: Router,
     private userService: UserService,
     private customerService: CustomerService,
   ) {}
 
   ngOnInit(): void {
     this.customerService.customer$().subscribe();
-    this.homeState$ = this.customerService.customer$().pipe(
+    this.newCustomerState$ = this.customerService.customer$().pipe(
       map((response) => {
         console.log(response);
         this.dataSubject.next(response);
@@ -59,14 +54,15 @@ export class Home implements OnInit {
     );
   }
 
-  goToPage(pageNumber?: number) {
+  createCustomer(newCustomerForm: NgForm): void {
+    this.isLoadingSubject.next(true);
     this.customerService.customer$().subscribe();
-    this.homeState$ = this.customerService.customer$(pageNumber).pipe(
+    this.newCustomerState$ = this.customerService.newCustomer$(newCustomerForm.value).pipe(
       map((response) => {
         console.log(response);
-        this.dataSubject.next(response);
-        this.currentPageSubject.next(pageNumber);
-        return { dataState: DataState.LOADED, appData: response };
+        newCustomerForm.reset({ type: 'INDIVIDUAL', appData: response });
+        this.isLoadingSubject.next(false);
+        return { dataState: DataState.LOADED, appData: this.dataSubject.value };
       }),
 
       startWith({
@@ -75,24 +71,13 @@ export class Home implements OnInit {
       }),
 
       catchError((error: string) => {
+        this.isLoadingSubject.next(false);
         return of({
-          dataState: DataState.ERROR,
+          dataState: DataState.LOADED,
           error: error,
-          appData: this.dataSubject.value,
         });
       }),
     );
   }
-
-  goToNextOrPreviousPage(direction: string) {
-    this.goToPage(
-      direction == 'forward'
-        ? this.currentPageSubject.value + 1
-        : this.currentPageSubject.value - 1,
-    );
-  }
-
-  selectCustomer(customer: Customer) {
-    this.router.navigate([`/customers/${customer.id}`]);
-  }
 }
+

@@ -3,7 +3,7 @@ import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/c
 import { CustomHttpResponse, Profile } from '../interface/appstate';
 import { BehaviorSubject, catchError, Observable, switchMap, throwError } from 'rxjs';
 import { Router } from '@angular/router';
-import { UserService } from '../service/userservice';
+import { UserService } from '../service/user.service';
 import { Key } from '../enum/key.enum';
 
 @Injectable({providedIn: 'root'})

@@ -5,7 +5,7 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { AsyncPipe, DatePipe, NgClass, NgForOf, NgIf } from '@angular/common';
 import { BehaviorSubject, catchError, map, Observable, of, startWith } from 'rxjs';
 import { CustomHttpResponse, Profile } from '../../interface/appstate';
-import { UserService } from '../../service/userservice';
+import { UserService } from '../../service/user.service';
 import { State } from '../../interface/state';
 import { DataState } from '../../enum/datastate.enum';
 import { EventType} from '../../enum/event.type.enum';
@@ -30,8 +30,8 @@ export class ProfileComponent implements OnInit {
   constructor(private userService: UserService) {}
 
   ngOnInit(): void {
-    this.userService.profile$().subscribe();
-    this.profileState = this.userService.profile$().pipe(
+    this.userService.customerService$().subscribe();
+    this.profileState = this.userService.customerService$().pipe(
       map((response) => {
         this.dataSubject.next(response);
         return { dataState: DataState.LOADED, appData: response };

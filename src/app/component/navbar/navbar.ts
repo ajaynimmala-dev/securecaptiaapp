@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { UserService } from '../../service/userservice';
+import { UserService } from '../../service/user.service';
 import { User } from '../../interface/user';
 
 @Component({
