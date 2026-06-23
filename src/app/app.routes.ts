@@ -8,7 +8,7 @@ import {  ProfileComponent } from './component/profile/profile';
 import { Home } from './component/home/home';
 import { AuthenticationGuard } from './component/guard/authentication.guard';
 import { Newcustomer } from './component/newcustomer/newcustomer';
-import { Newinvoice } from './component/newinvoice/newinvoice';
+import {Newinvoice } from './component/newinvoice/newinvoice';
 import { Invoices } from './component/invoices/invoices';
 import { Customer } from './component/customer/customer';
 import { Invoice } from './component/invoice/invoice';
