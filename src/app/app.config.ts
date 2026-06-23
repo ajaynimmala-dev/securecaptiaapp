@@ -7,6 +7,7 @@ import { provideHttpClient, withInterceptorsFromDi, HTTP_INTERCEPTORS } from '@a
 import { routes } from './app.routes';
 
 import { TokenInterceptor } from './interceptor/token-interceptor';
+import { CacheInterceptor } from './interceptor/cache.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -23,5 +24,11 @@ export const appConfig: ApplicationConfig = {
       useExisting: TokenInterceptor,
       multi: true,
     },
+    CacheInterceptor,
+    {
+      provide:HTTP_INTERCEPTORS,
+      useExisting: CacheInterceptor,
+      multi: true,
+    }
   ],
 };

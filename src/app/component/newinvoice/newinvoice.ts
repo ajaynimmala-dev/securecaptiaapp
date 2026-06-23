@@ -53,6 +53,7 @@ export class Newinvoice implements OnInit {
   }
 
   newInvoice(newInvoiceForm: NgForm): void {
+    console.log(newInvoiceForm.value);
     this.isLoadingSubject.next(true);
     this.customerService.customer$().subscribe();
     this.newInvoiceState$ = this.customerService.createInvoice$(newInvoiceForm.value.customerId,newInvoiceForm.value).pipe(

@@ -11,6 +11,7 @@ import { DataState } from '../../enum/datastate.enum';
 import { EventType } from '../../enum/event.type.enum';
 import { AsyncPipe, NgIf, NgSwitch, NgSwitchCase } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
+import { Customer } from '../../interface/customer';
 
 @Component({
   selector: 'app-newcustomer',
@@ -19,8 +20,8 @@ import { FormsModule, NgForm } from '@angular/forms';
   styleUrl: './newcustomer.css',
 })
 export class Newcustomer implements OnInit {
-  newCustomerState$: Observable<State<CustomHttpResponse<Page & User>>>;
-  private dataSubject = new BehaviorSubject<CustomHttpResponse<Page & User>>(null);
+  newCustomerState$: Observable<State<CustomHttpResponse<Page<Customer> & User>>>;
+  private dataSubject = new BehaviorSubject<CustomHttpResponse<Page<Customer> & User>>(null);
   protected isLoadingSubject = new BehaviorSubject<boolean>(false);
   isLoading$ = this.isLoadingSubject.asObservable();
   readonly DataState = DataState;

@@ -7,7 +7,7 @@ import { CustomerState, CustomHttpResponse } from '../../interface/appstate';
 import { CustomerService } from '../../service/customer.service';
 import { DataState } from '../../enum/datastate.enum';
 import { EventType } from '../../enum/event.type.enum';
-import { AsyncPipe, NgClass, NgForOf, NgIf, NgSwitch, NgSwitchCase } from '@angular/common';
+import { AsyncPipe, DatePipe, NgClass, NgForOf, NgIf, NgSwitch, NgSwitchCase } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 
 @Component({
@@ -22,6 +22,7 @@ import { FormsModule, NgForm } from '@angular/forms';
     NgClass,
     FormsModule,
     NgForOf,
+    DatePipe,
   ],
   templateUrl: './customer.html',
   styleUrl: './customer.css',
@@ -65,35 +66,40 @@ export class Customer implements OnInit {
     );
   }
 
-  updateCustomer(customerForm : NgForm): void {
-  this.isLoadingSubject.next(true);
-     this.customerService.update$(customerForm.value).pipe(
-      map((response) => {
-        console.log(response);
-        this.dataSubject.next({...response,
-        data : {
-          ...response.data,
-          customer : {
-          ...response.data.customer,
-          invoices: this.dataSubject.value.data.customer.invoices}
-        }
-        });
-        this.isLoadingSubject.next(false);
-        return { dataState: DataState.LOADED, appData: this.dataSubject.value };
-      }),
+  updateCustomer(customerForm: NgForm): void {
+    this.isLoadingSubject.next(true);
+    this.customerService
+      .update$(customerForm.value)
+      .pipe(
+        map((response) => {
+          console.log(response);
+          this.dataSubject.next({
+            ...response,
+            data: {
+              ...response.data,
+              customer: {
+                ...response.data.customer,
+                invoices: this.dataSubject.value.data.customer.invoices,
+              },
+            },
+          });
+          this.isLoadingSubject.next(false);
+          return { dataState: DataState.LOADED, appData: this.dataSubject.value };
+        }),
 
-      startWith({
-        dataState: DataState.LOADED,
-        appData : this.dataSubject.value,
-      }),
+        startWith({
+          dataState: DataState.LOADED,
+          appData: this.dataSubject.value,
+        }),
 
-      catchError((error: string) => {
-        this.isLoadingSubject.next(false);
-        return of({
-          dataState: DataState.ERROR,
-          error: error,
-        })
-      })
-     ).subscribe()
+        catchError((error: string) => {
+          this.isLoadingSubject.next(false);
+          return of({
+            dataState: DataState.ERROR,
+            error: error,
+          });
+        }),
+      )
+      .subscribe();
   }
 }

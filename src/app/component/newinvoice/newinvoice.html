@@ -54,7 +54,7 @@
 
                 <!-- Success -->
                 <div
-                  *ngIf="state?.appData?.message === 'Invoice added to customer'"
+                  *ngIf="state?.appData?.message"
                   class="alert alert-success bg-success text-light border-0 alert-dismissible fade show"
                   role="alert">
 
@@ -129,7 +129,7 @@
                         <input
                           ngModel
                           type="date"
-                          name="invoiceDate"
+                          name="date"
                           class="form-control"
                           required>
 

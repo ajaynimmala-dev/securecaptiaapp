@@ -11,7 +11,7 @@ import { Newcustomer } from './component/newcustomer/newcustomer';
 import {Newinvoice } from './component/newinvoice/newinvoice';
 import { Invoices } from './component/invoices/invoices';
 import { Customer } from './component/customer/customer';
-import { Invoice } from './component/invoice/invoice';
+import { InvoiceComponent } from './component/invoice/invoice';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -25,7 +25,7 @@ export const routes: Routes = [
   { path: 'invoices/new', component: Newinvoice, canActivate: [AuthenticationGuard] },
   { path: 'invoices', component: Invoices, canActivate: [AuthenticationGuard] },
   { path: 'customers/:customerId', component: Customer, canActivate: [AuthenticationGuard] },
-  { path: 'invoices/:id/:invoiceNumber', component: Invoice, canActivate: [AuthenticationGuard] },
+  { path: 'invoices/:id/:invoiceNumber', component: InvoiceComponent, canActivate: [AuthenticationGuard] },
   { path: '', component: Home, canActivate: [AuthenticationGuard] },
   { path: '', redirectTo: '/', pathMatch: 'full' },
   { path: '**', component: Home },

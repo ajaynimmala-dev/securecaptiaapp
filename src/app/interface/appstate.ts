@@ -31,8 +31,8 @@ export interface Profile{
   refresh_token:string;
 }
 
-export interface Page{
-  content :Customer[];
+export interface Page<T>{
+  content :T[];
   totalPages : number;
   totalElements : number;
   numberOfElements : number;
@@ -40,7 +40,15 @@ export interface Page{
   number : number;
 }
 
+export interface Register{
+  dataState:DataState;
+  registerSuccess?: boolean;
+  error?: string;
+  message?: string;
+}
+
 export interface CustomerState{
   user : User;
   customer : Customer;
 }
+

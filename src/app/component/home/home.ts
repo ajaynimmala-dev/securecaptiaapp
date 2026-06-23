@@ -12,6 +12,7 @@ import { AsyncPipe, NgClass, NgForOf, NgIf } from '@angular/common';
 import { User } from '../../interface/user';
 import { Customer } from '../../interface/customer';
 import { Router, RouterLink } from '@angular/router';
+import { Stats } from '../../interface/stats';
 
 @Component({
   selector: 'app-home',
@@ -20,8 +21,8 @@ import { Router, RouterLink } from '@angular/router';
   styleUrl: './home.css',
 })
 export class Home implements OnInit {
-  homeState$: Observable<State<CustomHttpResponse<Page & User>>>;
-  private dataSubject = new BehaviorSubject<CustomHttpResponse<Page & User>>(null);
+  homeState$: Observable<State<CustomHttpResponse<Page<Customer> & User & Stats>>>;
+  private dataSubject = new BehaviorSubject<CustomHttpResponse<Page<Customer> & User & Stats>>(null);
   protected isLoadingSubject = new BehaviorSubject<boolean>(false);
   isLoading$ = this.isLoadingSubject.asObservable();
   private currentPageSubject = new BehaviorSubject<number>(0);
